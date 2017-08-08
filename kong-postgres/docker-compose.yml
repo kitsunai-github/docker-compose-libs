@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  kong-database:
+    image: postgres:9.4
+    ports:
+      - 5432:5432
+    volumes:
+      - "./.kong-db/:/var/lib/postgresql/data"
+    environment:
+      - POSTGRES_USER=kong
+      - POSTGRES_DB=kong
+  # Kong
+  kong:
+    image: kong
+    restart: always
+    links:
+      - kong-database:kong-database
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+    restart: always
+    environment:
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=kong-database
